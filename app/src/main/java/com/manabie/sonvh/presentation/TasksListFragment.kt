@@ -13,7 +13,9 @@ import com.manabie.sonvh.domain.MainViewModel
 import com.manabie.sonvh.domain.TaskType
 import com.manabie.sonvh.domain.UpdateEvent
 import com.manabie.sonvh.model.entity.TodoTasks
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TasksListFragment: Fragment(){
     private var _binding: FragmentListTasksBinding? = null
     private val binding get() = _binding!!

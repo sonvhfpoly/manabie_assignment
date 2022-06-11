@@ -8,7 +8,9 @@ import com.manabie.sonvh.databinding.ActivityMainBinding
 import com.manabie.sonvh.domain.GetTasksEvent
 import com.manabie.sonvh.domain.MainViewModel
 import com.manabie.sonvh.domain.TaskType
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

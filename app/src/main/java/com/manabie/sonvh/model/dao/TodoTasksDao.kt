@@ -16,6 +16,9 @@ interface TodoTasksDao {
     @Insert
     fun insertTodoTask(todoTasks: TodoTasks): Long
 
+    @Query("select * from todotasks where uid = :taskId")
+    fun searchTodoTask(taskId: Int): TodoTasks
+
     @Query("update todotasks set completed = :isCompleted where uid = :taskId")
     fun updateTodoTask(taskId: Int, isCompleted: Boolean): Int
 

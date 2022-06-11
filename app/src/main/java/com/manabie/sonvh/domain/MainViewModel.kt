@@ -4,25 +4,18 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.manabie.sonvh.model.TodoDatabase
 import com.manabie.sonvh.model.entity.TodoTasks
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val todoDao = TodoDatabase.getDatabase(application.applicationContext).todoTasksDao()
-
-    private val allTasks by lazy {
-        todoDao.getAllTodoTasks().asLiveData()
-    }
-    private val incompleteTasks by lazy {
-        todoDao.getIncompleteTasks().asLiveData()
-    }
-    private val completedTask by lazy {
-        todoDao.getCompletedTasks().asLiveData()
-    }
+@HiltViewModel
+class MainViewModel @Inject constructor( private val localDbRepository: LocalDbRepository): ViewModel(){
 
     private var currentOwner: LifecycleOwner? = null
     private var currentObserver: Observer<List<TodoTasks>>? = null
@@ -31,7 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun observeData(lifecycleOwner: LifecycleOwner, observer: Observer<List<TodoTasks>>) {
         currentOwner = lifecycleOwner
         currentObserver = observer
-        allTasks.observe(currentOwner!!, currentObserver!!)
+        localDbRepository.observeAllTasks(currentOwner!!, currentObserver!!)
     }
 
     fun sendEvent(event: Event) {
@@ -50,13 +43,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun updateTodoTask(event: UpdateEvent){
         viewModelScope.launch(Dispatchers.IO){
-            todoDao.updateTodoTask(event.taskId, event.isCompleted)
+            localDbRepository.todoDao.updateTodoTask(event.taskId, event.isCompleted)
         }
     }
 
     private fun insertTodoTask(event: InsertEvent) {
         viewModelScope.launch(Dispatchers.IO) {
-            todoDao.insertTodoTask(event.todoTasks)
+            localDbRepository.todoDao.insertTodoTask(event.todoTasks)
         }
     }
 
@@ -69,13 +62,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun clearObserver(){
         when(currentTaskType){
             TaskType.ALL -> {
-                currentObserver?.let { allTasks.removeObserver(it) }
+                currentObserver?.let { localDbRepository.removeAllTaskObserver(it)}
             }
             TaskType.COMPLETED -> {
-                currentObserver?.let { completedTask.removeObserver(it) }
+                currentObserver?.let { localDbRepository.removeCompletedTaskObserver(it) }
             }
             TaskType.INCOMPLETE -> {
-                currentObserver?.let { incompleteTasks.removeObserver(it) }
+                currentObserver?.let { localDbRepository.removeIncompleteTaskObserver(it)}
             }
         }
     }
@@ -83,13 +76,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun observeData(newTaskType: TaskType){
         when(newTaskType){
             TaskType.ALL -> {
-                currentObserver?.let { currentOwner?.let { lifecycleOwner -> allTasks.observe(lifecycleOwner, it) } }
+                currentObserver?.let { currentOwner?.let { lifecycleOwner -> localDbRepository.observeAllTasks(lifecycleOwner, it) } }
             }
             TaskType.COMPLETED -> {
-                currentObserver?.let {currentOwner?.let { lifecycleOwner -> completedTask.observe(lifecycleOwner, it) }}
+                currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeCompletedTask(lifecycleOwner, it) }}
             }
             TaskType.INCOMPLETE -> {
-                currentObserver?.let {currentOwner?.let { lifecycleOwner -> incompleteTasks.observe(lifecycleOwner, it) } }
+                currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeIncompleteTask(lifecycleOwner, it) } }
             }
         }
     }

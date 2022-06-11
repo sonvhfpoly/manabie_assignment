@@ -13,7 +13,9 @@ import com.manabie.sonvh.domain.InsertEvent
 import com.manabie.sonvh.domain.TaskType
 import com.manabie.sonvh.domain.MainViewModel
 import com.manabie.sonvh.model.entity.TodoTasks
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CreateTaskFragment: DialogFragment() {
 
     private var _binding:FragmentCreateTaskBinding? = null
