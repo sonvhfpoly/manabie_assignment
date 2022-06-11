@@ -42,7 +42,6 @@ class CreateTaskFragment: DialogFragment() {
                 binding.textInputLayout.error = "Task must not be empty"
             }else{
                 val task = TodoTasks(
-                    isCompleted = false,
                     task = binding.textInputText.text.toString()
                 )
                 val event = InsertEvent(task)

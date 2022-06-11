@@ -6,7 +6,7 @@ interface Event
 
 class InsertEvent(val todoTasks: TodoTasks): Event
 
-class UpdateEvent(val todoTasks: TodoTasks): Event
+class UpdateEvent(val taskId: Int, val isCompleted: Boolean): Event
 
 class GetTasksEvent(val taskType: TaskType): Event
 

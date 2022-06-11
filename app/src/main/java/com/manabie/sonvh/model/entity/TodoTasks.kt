@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class TodoTasks(
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
-    @ColumnInfo(name = "completed") val isCompleted: Boolean,
+    @ColumnInfo(name = "completed") val isCompleted: Boolean = false,
     @ColumnInfo(name = "task") val task: String
 )

@@ -11,17 +11,17 @@ import kotlinx.coroutines.flow.Flow
 interface TodoTasksDao {
 
     @Query("select * from todotasks")
-    fun getAllTodoTasks(): List<TodoTasks>
+    fun getAllTodoTasks(): Flow<List<TodoTasks>>
 
     @Insert
     fun insertTodoTask(todoTasks: TodoTasks): Long
 
-    @Update
-    fun updateTodoTask(todoTasks: TodoTasks): Int
+    @Query("update todotasks set completed = :isCompleted where uid = :taskId")
+    fun updateTodoTask(taskId: Int, isCompleted: Boolean): Int
 
     @Query("select * from todotasks where completed = 1")
-    fun getCompletedTasks(): List<TodoTasks>
+    fun getCompletedTasks(): Flow<List<TodoTasks>>
 
     @Query("select * from todotasks where completed = 0")
-    fun getIncompleteTasks(): List<TodoTasks>
+    fun getIncompleteTasks(): Flow<List<TodoTasks>>
 }
