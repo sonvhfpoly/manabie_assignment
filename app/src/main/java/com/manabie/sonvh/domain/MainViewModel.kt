@@ -1,13 +1,9 @@
 package com.manabie.sonvh.domain
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.manabie.sonvh.model.TodoDatabase
 import com.manabie.sonvh.model.entity.TodoTasks
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -60,29 +56,33 @@ class MainViewModel @Inject constructor( private val localDbRepository: LocalDbR
     }
 
     private fun clearObserver(){
-        when(currentTaskType){
-            TaskType.ALL -> {
-                currentObserver?.let { localDbRepository.removeAllTaskObserver(it)}
-            }
-            TaskType.COMPLETED -> {
-                currentObserver?.let { localDbRepository.removeCompletedTaskObserver(it) }
-            }
-            TaskType.INCOMPLETE -> {
-                currentObserver?.let { localDbRepository.removeIncompleteTaskObserver(it)}
+        viewModelScope.launch (Dispatchers.Main){
+            when(currentTaskType){
+                TaskType.ALL -> {
+                    currentObserver?.let { localDbRepository.removeAllTaskObserver(it)}
+                }
+                TaskType.COMPLETED -> {
+                    currentObserver?.let { localDbRepository.removeCompletedTaskObserver(it) }
+                }
+                TaskType.INCOMPLETE -> {
+                    currentObserver?.let { localDbRepository.removeIncompleteTaskObserver(it)}
+                }
             }
         }
     }
 
     private fun observeData(newTaskType: TaskType){
-        when(newTaskType){
-            TaskType.ALL -> {
-                currentObserver?.let { currentOwner?.let { lifecycleOwner -> localDbRepository.observeAllTasks(lifecycleOwner, it) } }
-            }
-            TaskType.COMPLETED -> {
-                currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeCompletedTask(lifecycleOwner, it) }}
-            }
-            TaskType.INCOMPLETE -> {
-                currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeIncompleteTask(lifecycleOwner, it) } }
+        viewModelScope.launch (Dispatchers.Main){
+            when(newTaskType){
+                TaskType.ALL -> {
+                    currentObserver?.let { currentOwner?.let { lifecycleOwner -> localDbRepository.observeAllTasks(lifecycleOwner, it) } }
+                }
+                TaskType.COMPLETED -> {
+                    currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeCompletedTask(lifecycleOwner, it) }}
+                }
+                TaskType.INCOMPLETE -> {
+                    currentObserver?.let {currentOwner?.let { lifecycleOwner -> localDbRepository.observeIncompleteTask(lifecycleOwner, it) } }
+                }
             }
         }
     }
